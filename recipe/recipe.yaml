@@ -98,6 +98,7 @@ tests:
     then:
       - script:
           content:
+            - export OMPI_MCA_plm_rsh_agent=ssh
             - mpiexec -n 1 python -m mpi4py --version
             - mpiexec -n 1 python -m mpi4py --mpi-std-version
             - mpiexec -n 1 python -m mpi4py --mpi-lib-version
