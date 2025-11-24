@@ -57,9 +57,9 @@ requirements:
     # with latest mpich/openmpi to be used (at least) one major version back.
     # thus we handle our own run exports and ignore those from the packages
     - if: mpi == "mpich"
-      then: mpich >=${{ (mpich | int) - 1}},<${{ (mpich | int) + 1 }}.0a0
+      then: mpich >=${{ (mpich | int) - 1 }},<${{ (mpich | int) + 1 }}.0a0
     - if: mpi == "openmpi"
-      then: openmpi >=${{ (openmpi | int) - 1}},<${{ (openmpi | int) + 1 }}.0a0
+      then: openmpi >=${{ (openmpi | int) - 1 }},<${{ (openmpi | int) + 1 }}.0a0
   ignore_run_exports:
     from_package:
       - if: mpi == "mpich" or mpi == "openmpi"
@@ -114,8 +114,8 @@ tests:
           run:
             - if: mpi == "mpich"
               then: mpich =${{ (mpich | int) - 1 }}
-            - if: mpi == "openmp"
-              then: openmp =${{ (openmp | int) - 1 }}
+            - if: mpi == "openmpi"
+              then: openmpi =${{ (openmpi | int) - 1 }}
 
 about:
   license: BSD-3-Clause
