@@ -95,13 +95,15 @@ tests:
   # smoke tests for running against older versions of mpich/openmpi
   - script:
       content:
-        - mpiexec -n 1 python -m mpi4py --version
-        - mpiexec -n 1 python -m mpi4py --mpi-std-version
-        - mpiexec -n 1 python -m mpi4py --mpi-lib-version
-        - mpiexec -n 2 python -m mpi4py.bench helloworld
-        - mpiexec -n 2 python -m mpi4py.bench ringtest
-        # Additional tests are in Python
-        - python test_mpi4py.py
+        if: mpi == "mpich"
+        then:
+          - mpiexec -n 1 python -m mpi4py --version
+          - mpiexec -n 1 python -m mpi4py --mpi-std-version
+          - mpiexec -n 1 python -m mpi4py --mpi-lib-version
+          - mpiexec -n 2 python -m mpi4py.bench helloworld
+          - mpiexec -n 2 python -m mpi4py.bench ringtest
+          # Additional tests are in Python
+          - python test_mpi4py.py
       env:
         # workaround https://github.com/prefix-dev/rattler-build/issues/1317
         CONDA_BUILD: "1"
@@ -110,16 +112,19 @@ tests:
         - test_mpi4py.py
     requirements:
       run:
-        - mpich =${{ (mpich | int) - 1 }}
+        - if: mpi == "mpich"
+          then: mpich =${{ (mpich | int) - 1 }}
   - script:
       content:
-        - mpiexec -n 1 python -m mpi4py --version
-        - mpiexec -n 1 python -m mpi4py --mpi-std-version
-        - mpiexec -n 1 python -m mpi4py --mpi-lib-version
-        - mpiexec -n 2 python -m mpi4py.bench helloworld
-        - mpiexec -n 2 python -m mpi4py.bench ringtest
-        # Additional tests are in Python
-        - python test_mpi4py.py
+        if: mpi == "openmpi"
+        then:
+          - mpiexec -n 1 python -m mpi4py --version
+          - mpiexec -n 1 python -m mpi4py --mpi-std-version
+          - mpiexec -n 1 python -m mpi4py --mpi-lib-version
+          - mpiexec -n 2 python -m mpi4py.bench helloworld
+          - mpiexec -n 2 python -m mpi4py.bench ringtest
+          # Additional tests are in Python
+          - python test_mpi4py.py
       env:
         # workaround https://github.com/prefix-dev/rattler-build/issues/1317
         CONDA_BUILD: "1"
@@ -128,7 +133,8 @@ tests:
         - test_mpi4py.py
     requirements:
       run:
-        - openmpi =${{ (mpich | int) - 1 }}
+        - if: mpi == "openmpi"
+          then: openmpi =${{ (mpich | int) - 1 }}
 
 about:
   license: BSD-3-Clause
