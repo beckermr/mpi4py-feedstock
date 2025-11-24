@@ -25,7 +25,8 @@ build:
       then: del src\\mpi.pth
     - if: mpi == "impi" and not win
       then: export I_MPI_CC=$CC
-    - export MPI4PY_BUILD_MPIABI=1
+    - if: mpi == "mpich" or mpi == "openmpi"
+      then: export MPI4PY_BUILD_MPIABI=1
     - ${{ PYTHON }} -m pip install --no-deps --no-build-isolation . -vv
 
 requirements:
