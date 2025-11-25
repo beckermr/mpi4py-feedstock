@@ -16,7 +16,6 @@ context:
   min_openmpi: "4.1"
   min_impi: "2021.10"
   min_msmpi: "10.1.1"
-  test_ompi_opts_str: ${{ "${TEST_OMPI_OPTS}" if unix else "%TEST_OMPI_OPTS%" }}
 
 package:
   name: mpi4py
@@ -95,6 +94,7 @@ tests:
   - script:
       content:
         - mpiexec -n 1 python -m mpi4py --version
+        - mpiexec -n 1 python -m mpi4py --mpi-library
         - mpiexec -n 1 python -m mpi4py --mpi-std-version
         - mpiexec -n 1 python -m mpi4py --mpi-lib-version
         - mpiexec -n 2 python -m mpi4py.bench helloworld
@@ -111,18 +111,20 @@ tests:
   - script:
       content:
         - if: mpi == "openmpi"
-          then: export OMPI_MCA_plm_rsh_agent=""
-        - mpiexec -n 1 ${{ test_ompi_opts_str }} python -m mpi4py --version
-        - mpiexec -n 1 ${{ test_ompi_opts_str }} python -m mpi4py --mpi-std-version
-        - mpiexec -n 1 ${{ test_ompi_opts_str }} python -m mpi4py --mpi-lib-version
-        - mpiexec -n 2 ${{ test_ompi_opts_str }} python -m mpi4py.bench helloworld
-        - mpiexec -n 2 ${{ test_ompi_opts_str }} python -m mpi4py.bench ringtest
+          then: export OMPI_MCA_plm_rsh_agent=false
+        - if: mpi == "openmpi"
+          then: export OMPI_MCA_rmaps_base_oversubscribe=true
+        - mpiexec -n 1 python -m mpi4py --version
+        - mpiexec -n 1 python -m mpi4py --mpi-library
+        - mpiexec -n 1 python -m mpi4py --mpi-std-version
+        - mpiexec -n 1 python -m mpi4py --mpi-lib-version
+        - mpiexec -n 2 python -m mpi4py.bench helloworld
+        - mpiexec -n 2 python -m mpi4py.bench ringtest
         # Additional tests are in Python
         - python test_mpi4py.py
       env:
         # workaround https://github.com/prefix-dev/rattler-build/issues/1317
         CONDA_BUILD: "1"
-        TEST_OMPI_OPTS: ${{ '--oversubscribe' if mpi == "openmpi" else '' }}
     files:
       recipe:
         - test_mpi4py.py
