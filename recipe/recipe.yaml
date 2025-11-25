@@ -4,8 +4,15 @@ context:
   version: "4.1.1"
   mpi: ${{ mpi | default('mpich') }}
   build: 2
-  mpich: ${{ mpich | default('4') }}
-  openmpi: ${{ openmpi | default('5') }}
+  # these defaults are here so the recipe renders properly
+  mpich: ${{ mpich | default('') }}
+  openmpi: ${{ openmpi | default('') }}
+  # we use the broader ABI compat in mpi4py that allows versions built
+  # with latest mpich/openmpi to be used with earlier versions.
+  # these versions of mpich & openmpi are the minimum versions we
+  # allow and match those in the CI testing for mpi4py.
+  min_mpich: "3.4"
+  min_openmpi: "4.1"
 
 package:
   name: mpi4py
@@ -55,12 +62,12 @@ requirements:
     - if: mpi == "msmpi"
       then: ${{ pin_compatible("msmpi") }}
     # we use the broader ABI compat in mpi4py that allows versions built
-    # with latest mpich/openmpi to be used (at least) one major version back.
-    # thus we handle our own run exports and ignore those from the packages
+    # with latest mpich/openmpi to be used with earlier versions.
+    # thus we handle our own run exports and ignore those from the packages.
     - if: mpi == "mpich"
-      then: mpich >=${{ (mpich | int) - 1 }},<${{ (mpich | int) + 1 }}.0a0
+      then: mpich >=${{ min_mpich }}
     - if: mpi == "openmpi"
-      then: openmpi >=${{ (openmpi | int) - 1 }},<${{ (openmpi | int) + 1 }}.0a0
+      then: openmpi >=${{ min_openmpi }}
   ignore_run_exports:
     from_package:
       - if: mpi == "mpich" or mpi == "openmpi"
@@ -117,9 +124,9 @@ tests:
         requirements:
           run:
             - if: mpi == "mpich"
-              then: mpich =${{ (mpich | int) - 1 }}
+              then: mpich =${{ min_mpich }}
             - if: mpi == "openmpi"
-              then: openmpi =${{ (openmpi | int) - 1 }}
+              then: openmpi =${{ min_openmpi }}
 
 about:
   license: BSD-3-Clause
