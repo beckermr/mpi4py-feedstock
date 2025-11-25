@@ -101,9 +101,6 @@ tests:
         - mpiexec -n 2 python -m mpi4py.bench ringtest
         # Additional tests are in Python
         - python test_mpi4py.py
-      env:
-        # workaround https://github.com/prefix-dev/rattler-build/issues/1317
-        CONDA_BUILD: "1"
     files:
       recipe:
         - test_mpi4py.py
@@ -122,9 +119,6 @@ tests:
         - mpiexec -n 2 python -m mpi4py.bench ringtest
         # Additional tests are in Python
         - python test_mpi4py.py
-      env:
-        # workaround https://github.com/prefix-dev/rattler-build/issues/1317
-        CONDA_BUILD: "1"
     files:
       recipe:
         - test_mpi4py.py
